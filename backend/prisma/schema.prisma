@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output          = "../src/generated/prisma"
+  moduleFormat  = "cjs"
+}
+
+model Quiz {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  questions   Question[]
+}
+
+enum QuestionType {
+  CHECKBOX
+  BOOLEAN
+  INPUT
+}
+
+model Question {
+  id       String   @id @default(uuid())
+  title     String
+  quizId   String
+  type     QuestionType
+  quiz     Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options  Option[]
+}
+
+model Option {
+  id         String   @id @default(uuid())
+  title      String
+  isCorrect  Boolean
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
